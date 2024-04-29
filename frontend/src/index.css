@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+.hover-style {
+    color: black; /* or any color you want */
+    font-weight: normal; /* or any font weight you want */
+  }
+  
+  .hover-style:hover {
+    color: rgb(30 64 175 / var(--tw-text-opacity));
+    font-weight: bold; /* change to your desired hover font weight */
+  }
+  .bg-customGreen {
+    background-color: #badba6;
+  }
+  .bg-customblue {
+    background-color: #addee3;
+  }
+  @layer utilities {
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+   /* Hide scrollbar for IE, Edge and Firefox */
+    .no-scrollbar {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+  }
+}
