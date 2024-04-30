@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { redirect } from 'react-router-dom';
+import Api from './api';
 
 const PostComment = () => {
     const [formData, setFormData] = useState({
@@ -16,7 +17,7 @@ const PostComment = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('http://localhost:3000/comment', formData); 
+            await axios.post(`${Api}/comment`, formData); 
             alert('Comment posted successfully!');
             
             setFormData({ name: '', bookname: '', comment: '' });

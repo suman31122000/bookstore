@@ -1,16 +1,13 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Api from "./api";
 
 const Dashboard = () => {
    const navigate=useNavigate();
     const handledashboard=()=>{location.reload()}
     const handledsignout=()=>{navigate('/')}
-    const [rentals, setRentals] = useState([
-        { name: "John", books: ["Book1", "Book2"] },
-        { name: "Alice", books: ["Book3", "Book4", "Book5"] },
-        { name: "Bob", books: ["Book6"] }
-    ]);
+    const [rentals, setRentals] = useState([]);
     const [state, setState] = useState([false, false, false, false, false]);
 
     const handleUpload = () => {
@@ -26,12 +23,27 @@ const Dashboard = () => {
             return newState;
         });
     };
+    useEffect(() => {
+    
+        const fetchData = async () => {
+            try {
+                const response = await axios.get(`${Api}/rentuser`);
+                setRentals(response.data);
+                console.log(response.data);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+        fetchData();
+    }, []);
     const handleuser = () => {
-        setState(prevState => {
-            const newState = prevState.map((value, index) => index === 2 ? !value : false); 
-            return newState;
+        setState((prevState) => {
+          const newState = prevState.map((value, index) =>
+            index === 2 ? !value : false
+          );
+          return newState;
         });
-    };
+      };
     
     const [bookData, setBookData] = useState({
         name: '',
@@ -49,7 +61,7 @@ const Dashboard = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('http://localhost:3000/add', bookData);
+            await axios.post(`${Api}/add`, bookData);
             alert('Book added successfully!');
             setBookData({
                 name: '',
@@ -81,7 +93,7 @@ const Dashboard = () => {
   const handlemanageSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:3000/update', {
+      const response = await fetch(`${Api}/update`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -91,16 +103,18 @@ const Dashboard = () => {
 
       if (response.ok) {
         console.log('Book updated successfully');
-        // Optionally, you can redirect the user or show a success message
       } else {
         console.error('Failed to update book');
-        // Handle error scenario
       }
     } catch (error) {
       console.error('Error updating book:', error);
-      // Handle error scenario
     }
   };
+  const handlerent=()=>{
+    navigate('/rent')
+}
+
+
 
     return (
         <div className="h-screen w-full flex gap-20 p-10">
@@ -109,7 +123,9 @@ const Dashboard = () => {
                 <button onClick={handledashboard} className="hover:bg-slate-200 hover:text-black h-10">Dashboard</button>
                 <button onClick={handleUpload} className="hover:bg-slate-200 hover:text-black h-10">Upload Book</button>
                 <button onClick={handlemanage} className="hover:bg-slate-200 hover:text-black h-10">ManageBook</button>
+                <button onClick={handlerent} className="hover:bg-slate-200 hover:text-black h-10">Rent Book</button>
                 <button onClick={handleuser} className="hover:bg-slate-200 hover:text-black h-10">Users</button>
+
                 <button onClick={handledsignout} className="hover:bg-slate-200 hover:text-black h-10">Sign Out</button>
             </div>
             <div className="bg-slate-200 h-full w-full">
@@ -177,19 +193,23 @@ const Dashboard = () => {
                 </div>
                 </form>
             )}
-            {(state[2] && <div className="h-screen w-full flex flex-col items-center ">
-            {rentals.map((rental, index) => (
-                <div key={index} className="flex flex-col items-center mb-4">
-                    <h2 className="text-xl font-semibold">{rental.name}'s Rented Books</h2>
-                    <ul className="list-disc pl-4">
-                        {rental.books.map((book, i) => (
-                            <li key={i}>{book}</li>
-                        ))}
-                    </ul>
-                </div>
-            ))}
-        </div>
-    )}
+            {state[2] && rentals && rentals.length > 0 && (
+  <div className=" w-full flex flex-col items-center bg-slate-200">
+    {rentals.map((rental, index) => (
+      <div key={index} className="flex flex-col items-center mb-4">
+        <h2 className="text-2xl font-bold">{rental.username}'s Rented Books</h2>
+        <ul className="list-disc pl-4">
+            <li ><span className="text-2xl font-semibold">  bookname: </span> <span>{rental.bookname} </span></li>
+            <li ><span className="text-2xl font-semibold">  author: </span> <span>{rental.author}</span></li>
+            <li ><span className="text-2xl font-semibold">  issue Date: </span> <span>{rental.date}</span></li>
+            
+        </ul>
+      </div>
+    ))}
+  </div>
+)}
+
+
     </div>
         </div>
     );

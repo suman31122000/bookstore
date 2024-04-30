@@ -5,6 +5,7 @@ import Books from './books';
 import AddBookForm from './addbooks';
 import PostComment from './postreview';
 import Dashboard from './dashboard';
+import BookRentingForm from './rentbook';
 
 const Server = () => {
     const navigate = useNavigate();
@@ -16,6 +17,7 @@ const Server = () => {
             <Route path='/sell' element={<AddBookForm/>}/>
             <Route path='/addcomment' element={<PostComment/>}/>
             <Route path='/dashboard' element={<Dashboard/>}/>
+            <Route path='/rent' element={<BookRentingForm/>}/>
         </Routes>
     );
 };

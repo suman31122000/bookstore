@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Api from './api';
 import { useNavigate } from 'react-router-dom';
 
 const Reviews = () => {
@@ -12,7 +13,7 @@ const Reviews = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:3000/getcomment'); 
+                const response = await axios.get(`${Api}/getcomment`); 
                 setReviews(response.data);
             } catch (error) {
                 console.error('Error fetching reviews:', error);

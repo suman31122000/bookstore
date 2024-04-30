@@ -1,7 +1,8 @@
 var express = require('express');
 var router = express.Router();
-const mongoose = require('./users'); // Importing Mongoose (assuming 'users' is your Mongoose model)
+const mongoose = require('./users'); 
 const comment=require('./user1');
+const usermodel=require('./user3');
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' }); 
 });
@@ -12,7 +13,7 @@ router.post('/add', async (req, res) => {
     let existingBook = await mongoose.findOne({ name: name });
 
     if (existingBook) {
-      existingBook.quantity += 1; // Assuming you have a 'quantity' field in your book schema
+      existingBook.quantity += 1; 
       await existingBook.save();
       res.status(200).json({ message: "Quantity increased successfully" });
     } else {
@@ -42,29 +43,35 @@ router.get('/find',async (req, res) => {
          });
 
 
-    router.get('/delete/:name', async (req, res) => {
-      try {
-        const name = req.params.name;
-        const existingBook = await mongoose.findOne({ name: name });
-    
-        if (existingBook.quantity) {
-          if (existingBook.quantity > 1) {
-            existingBook.quantity -= 1;
-            await existingBook.save();
-            res.status(200).json({ message: "Book quantity decremented successfully" });
-          } else {
-            const result = await mongoose.deleteOne({ name: name });
-            res.status(200).json({ message: "Book deleted" });
+         router.get('/delete/:name', async (req, res) => {
+          try {
+            const name = req.params.name;
+            const existingBook = await mongoose.findOne({ name: name });
+        
+            if (existingBook === null) {
+              return res.status(404).json({ message: "Book not found", bookFound: false });
+            }
+        
+            if (existingBook.quantity) {
+              if (existingBook.quantity > 1) {
+                existingBook.quantity -= 1;
+                await existingBook.save();
+                return res.status(200).json({ message: "Book quantity decremented successfully", bookFound: true });
+              } else {
+                const result = await mongoose.deleteOne({ name: name });
+                return res.status(200).json({ message: "Book deleted", bookFound: true });
+              }
+            } else {
+              return res.status(404).json({ message: "Book not found", bookFound: true });
+            }
+          } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: "Internal Server Error" });
           }
-        } else {
-          res.status(404).json({ message: "Book not found" });
-        }
-      } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Internal Server Error" });
-      }
-    });
-    
+        });
+        
+        
+        
 
 
     //comment
@@ -105,5 +112,14 @@ router.get('/find',async (req, res) => {
       }
   });
     
+  router.post('/user',async (req,res)=>{
+    const newBook = new usermodel(req.body); 
+    await newBook.save();
+    res.status(200).json({ message: "comment added successfully" });
+  })
 
+  router.get('/rentuser',async(req,res)=>{
+    const data=await usermodel.find();
+    res.send(data);
+  })
 module.exports = router;
